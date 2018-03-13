@@ -1,0 +1,18 @@
+#! /bin/bash
+
+root=`dirname $0`
+if [ $root = . ]
+then root=$PWD
+fi
+
+cd $root/src
+echo "==>正在进行源文件编译"
+filelist=`find -name "*.c"`
+for file in $filelist
+do
+filename=`basename $file`
+temp=(`echo $filename | sed 's/\./ /'`)
+gcc $file -o $root/${temp[0]}
+done
+echo "==>编译成功"
+$root/setup
