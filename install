@@ -1,18 +1,11 @@
 #! /bin/bash
 set -e
-root=`dirname $0`
-if [ $root = . ]
-then root=$PWD
-fi
 
-cd $root/src
-echo "==>正在进行源文件编译"
-filelist=`find -name "*.c"`
-for file in $filelist
-do
-filename=`basename $file`
-temp=(`echo $filename | sed 's/\./ /'`)
-gcc $file -o $root/${temp[0]}
-done
-echo "==>编译成功"
-$root/setup
+if [ -d ~/.submit50 ]
+then sudo rm -R ~/.submit50
+fi
+mkdir ~/.submit50
+cd ~/.submit50
+git clone https://github.com/qiyancos/submit50.git
+sudo chmod -R 777 ~/.submit50
+~/.submit50/submit50/build
