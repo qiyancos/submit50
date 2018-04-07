@@ -1,0 +1,100 @@
+#! /bin/bash
+
+upload(){
+cd ~/.submit50/gitdir
+name=`sed -n 1p ~/.submit50/config`
+stuid=`sed -n 2p ~/.submit50/config`
+echo "==> 开始上传sb2文件到远程库"
+if [ `find -name "*.sb2"`x != x ]
+then sudo rm ~/.submit50/gitdir/*.sb2
+fi
+sudo cp "$*" ~/.submit50/gitdir/`echo $stuid | base64 -i`.sb2
+git add --all
+git commit -m $stuid
+echo "<注意> 下面的提示中请输入公共github帐号的用户名和密码!"
+git push -u -f origin master:cs50/2018/spring/scratch
+if [ $? != 0 ]
+then 
+echo "<错误> 上传失败"
+exit
+else echo "==> 上传成功"
+fi
+}
+
+packup(){
+echo "==> 正在进行结果分析并生成报告"
+warnings=`grep -c "orange" ~/.submit50/ckrep.html`
+errors=`grep -c "red" ~/.submit50/ckrep.html`
+passed=`grep -c "green" ~/.submit50/ckrep.html`
+if [ $warnings = 0 -a $errors = 0 -a $passed = 0 ]
+then echo "<错误> 您可能需要重新认证cs50.me和github帐号public4all的关联"
+exit
+fi
+echo "==> 您本次检测结果如下: ";echo
+echo -e "\033[32m [Passed]    $passed \033[0m"
+echo -e "\033[33m [Warnings]  $warnings \033[0m"
+echo -e "\033[31m [Errors]    $errors \033[0m";echo
+if [ $passed != 8 ]
+then 
+sudo cp ~/.submit50/ckrep.html ~/Desktop/check50.html
+echo "==> 您可以在桌面上找到本次的检测报告文件'check50.html'并打开查看!"
+else
+echo "==> 请问您是否要将本次的结果打包提交? "
+echo -n "[按下ENTER键继续或者输入任意字符退出]"
+read flag
+if [ ${flag}x = x ]
+then
+if [ -f ~/.submit50/cs50/${stuid}_1.zip ]
+then echo "<警告> 发现以前的打包文件, 下面的操作将会覆盖该文件"
+fi
+cd ~/.submit50/
+echo "==> 正在为您打包本次作业: "
+mkdir ~/.submit50/${stuid}_1
+date=`date`
+echo $name, $stuid, $passed, $warnings, $errors, $date  | base64 -i > ~/.submit50/${stuid}_1/report.bin
+fprint=(`sudo md5sum /bin/submit50`)
+fprint2=(`sudo md5sum ~/.submit50/${stuid}_1/report.bin`)
+echo -e "${fprint[0]}\n${fprint2[0]}" > ~/.submit50/${stuid}_1/lisence
+sudo cp "$*" ~/.submit50/${stuid}_1/"`basename "$*"`"
+zippwd=`echo $stuid | base64 -i`
+cd ~/.submit50
+zip -rP "$zippwd" ~/.submit50/cs50/${stuid}_1.zip ./${stuid}_1/*
+sudo rm -R ~/.submit50/${stuid}_1
+echo "==> 已成功为您打包，正在进行提交:"
+cd ~/.submit50/cs50
+git add .
+git commit -m $stuid
+echo "<注意> 下面的提示中请输入公共github帐号的用户名和密码!"
+git push -u -f origin $stuid:$stuid
+if [ $? != 0 ]
+then 
+echo "<错误> 提交失败!"
+exit
+else echo "==> 提交成功!"
+fi
+else exit
+fi
+fi
+}
+
+if [ "$1"x = -cx ]
+then config;exit
+fi
+
+if [ "$1"x = -hx -o "$1"x = x ]
+then echo "提交sb2文件并生成报告:       submit50 [拖入需要提交的sb2文件]"
+echo "从您的电脑中卸载submit50:    submit50 -u"
+exit
+fi
+ 
+if [ ! -f "$*" ]
+then echo "<错误> 无法找到这个文件或目录!"
+else 
+upload $*
+echo "==> 正在进行在线检测(该步骤可能需要花费1分钟)"
+if [ -f ~/.submit50/ckrep.html ]
+then sudo rm ~/.submit50/ckrep.html
+fi
+python ~/.submit50/check.pyc > ~/.submit50/ckrep.html
+packup $*
+fi

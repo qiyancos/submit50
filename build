@@ -1,0 +1,29 @@
+#! /bin/bash
+set -e
+
+if [ ${1}x = -ux ]
+then
+gcc ~/.submit50/submit50/src/build.x.c -o ~/.submit50/submit50/buildx
+newmain=(`md5sum ~/.submit50/submit50/buildx`)
+oldmain=(`md5sum ~/.submit50/buildx`)
+if [ ${newmain[0]} != ${oldmain[0]} ]
+then mv ~/.submit50/submit50/buildx ~/.submit50/buildx
+~/.submit50/buildx -u
+exit
+fi
+fi
+
+cd ~/.submit50/submit50/src
+echo "==> 正在进行源文件编译"
+filelist=`find -name "*.c"`
+for file in $filelist
+do
+filename=`basename $file`
+temp=(`echo $filename | sed 's/\./ /'`)
+gcc $file -o ~/.submit50/${temp[0]}x
+done
+echo "==> 编译成功"
+if [ ${1}x != -ux ]
+then ~/.submit50/setupx
+else ~/.submit50/updatex
+fi

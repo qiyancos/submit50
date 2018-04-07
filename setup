@@ -1,0 +1,185 @@
+#! /bin/bash
+set -e
+
+getname(){
+echo;echo -e "\033[31m <注意>您如果希望更改姓名和学号信息, 必须重新安装submit50! \033[0m";echo
+flag=1
+while [ ${flag}x != x ]
+do
+echo -n "==> 请输入您的姓名: "
+read name
+if [ ${name}x = x ]
+then echo "<错误> 输入姓名不能为空"
+continue
+fi
+echo "<注意> 您是$name吗？"
+echo -n "[按下ENTER键继续或者输入任意字符确定后重新输入] "
+read flag
+if [ ${flag}x = x ]
+then flag=""
+fi
+done
+}
+
+getgitname(){
+while [ 1 ]
+do
+echo -n "==> 请输入您在github.com的用户名: "
+read gitname
+if [ ${gitname}x = x ]
+then echo "<错误> 输入用户名不能为空"
+continue
+else break
+fi
+done
+}
+
+getpassword(){
+flag=1
+while [ ${flag}x != x ]
+do
+echo -n "==> 请输入您在github.com上$gitname的密码: "
+read -s temp
+if [ ${temp}x = x ]
+then echo "<错误> 输入密码不能为空"
+continue
+fi
+echo;echo -n "==> 请重新输入密码以确认: "
+read -s password
+if [ ${password}x = x ]
+then echo "<错误> 输入密码不能为空"
+continue
+fi
+if [ $temp = $password ]
+then flag=""
+else echo "<错误> 两次输入密码不一致"
+fi
+done
+}
+
+getid(){
+flag=1
+while [ ${flag}x != x ]
+do
+echo -n "==> 请输入您的学号: "
+read stuid
+if [ ${name}x = x ]
+then echo "<错误> 输入学号不能为空"
+continue
+fi
+echo "<注意> 您确定您的学号是$stuid吗?"
+echo -n "[按下ENTER键继续或者输入任意字符确定后重新输入] "
+read flag
+if [ ${flag}x = x ]
+then flag=""
+fi
+done
+}
+
+getemail(){
+flag=1;echo
+while [ ${flag}x != x ]
+do
+echo -n "==> 请输入您在github.com上$gitname对应的邮箱: "
+read email
+if [ ${email}x = x ]
+then echo "<错误> 输入邮箱不能为空"
+continue
+fi
+echo "<注意> 您确定您的邮箱是$email吗?"
+echo -n "[按下ENTER键继续或者输入任意字符确定后重新输入] "
+read flag
+if [ ${flag}x = x ]
+then flag=""
+fi
+done
+}
+
+config(){
+getname
+getid
+echo "==> 正在配置环境"
+mkdir ~/.submit50/gitdir
+echo -e "$name\n$stuid" > ~/.submit50/config
+cp ~/.submit50/submit50/check.pyc ~/.submit50/check.pyc
+cp ~/.submit50/submit50/version ~/.submit50/version
+sudo cp ~/.submit50/submit50x /bin/submit50
+sudo chmod 777 /bin/submit50
+sudo chmod -R 777 ~/.submit50/*
+cd ~/.submit50/gitdir
+git init
+git config --global user.name public4all
+git config --global user.email lishuoke1025@gmail.com
+git remote add origin https://github.com/submit50/public4all.git
+cd ~/.submit50
+echo "==> 正在获取往期的作业提交!"
+if [ -d ~/.submit50/cs50 ]
+then rm -R ~/.submit50/cs50
+fi
+git clone -b master https://github.com/public4all/cs50.git
+cd ~/.submit50/cs50
+lines=`git branch -a | sed -n /$stuid/p`
+if [ "${lines}x" = x ]
+then 
+git branch $stuid
+git checkout $stuid
+else 
+cd ~/.submit50
+sudo rm -R ~/.submit50/cs50
+git clone -b $stuid https://github.com/public4all/cs50.git
+fi
+}
+
+installgit(){
+echo "==> 请问您是否要安装submit50的支持库(如果已经安装可以跳过)"
+echo "[按下ENTER继续安装或者输入任意字符跳过安装]"
+read flag
+if [ ${flag}x = x ]
+then
+echo "==> 正在获取安装最新版本的系统库(根据您的网速这可能需要数分钟)!"
+#sudo add-apt-repository ppa:git-core/ppa
+#sudo apt-get update
+sudo apt-get remove libdpkg-perl
+sudo apt-get install libdpkg-perl
+sudo apt-get install dpkg-dev
+
+sudo apt-get install expect
+sudo apt-get install tcl
+sudo apt-get install tcl-dev
+
+sudo apt-get install python
+sudo apt-get install python-selenium
+
+if [ `getconf LONG_BIT` != 64 ]
+then echo "<错误> 您没有安装64位系统，本软件无法正常使用!";exit
+
+else 
+if [ ! -f /usr/bin/chromedriver ]
+then sudo cp ~/.submit50/submit50/chromedriver /usr/local/share/
+sudo ln /usr/local/share/chromedriver /usr/local/bin/chromedriver
+sudo ln /usr/local/share/chromedriver /usr/bin/chromedriver
+fi
+
+sudo chmod 777 /usr/local/share/chromedriver
+sudo chmod 777 /usr/local/bin/chromedriver
+sudo chmod 777 /usr/bin/chromedriver
+
+unsupported="systemd-services libcgmanager0 libjasper1 libnss3-nssdb"
+
+sudo apt-get install apt apt-utils ca-certificates dbus fontconfig fontconfig-config gnupg gpgv isc-dhcp-common libapparmor1 libasn1-8-heimdal libcups2 libdb5.3 libdrm2 libexpat1 libffi6 libfontconfig1 libfreetype6 libgd3 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgraphite2-3 libgssapi3-heimdal libgudev-1.0-0 libharfbuzz0b libhcrypto4-heimdal libheimbase1-heimdal libhx509-5-heimdal libidn11 libkrb5-26-heimdal libldap-2.4.2 libnspr4 libnss3 libpam-systemd libssl1.0.0  libtiff5 libudev1 libwind0-heimdal libxcursor1 libxml2 libxpm4 multiarch-support openssl python3.4 python3.4-minimal sensible-utils tzdata udev $unsupported
+
+sudo apt-get -f install
+sudo dpkg -i ~/.submit50/submit50/google-chrome*
+sudo apt-get autoremove
+
+fi
+fi
+}
+
+init(){
+installgit
+config
+echo "==> 安装成功!"
+}
+
+init

@@ -1,0 +1,39 @@
+#! /bin/bash
+set -e
+
+if [ ${1}x = -rx ]
+then sudo apt-get -f install
+~/.submit50/buildx
+exit
+fi
+
+if [ -d ~/.submit50 ]
+then echo "<错误> 您似乎已经安装了submit50或者安装了不完整的submit50!"
+echo "==> 请问您是否希望重新进行安装?"
+echo -n "[按下ENTER继续或者输入任意字符退出!]: "
+read flag
+if [ ${flag}x != x ]
+then exit 
+else 
+
+if [ -d ~/.submit50 ]
+then sudo rm -R ~/.submit50
+fi
+
+if [ -f /bin/submit50 ]
+then sudo rm /bin/submit50
+fi
+
+echo "==> 您已经成功删除submit50！"
+
+fi
+fi
+
+mkdir ~/.submit50
+cd ~/.submit50
+echo "==> 正在下载软件安装包(根据您的网速可能花费数分钟)"
+git clone https://github.com/qiyancos/submit50.git
+sudo chmod -R 777 ~/.submit50
+echo "==> 软件包下载完成!"
+gcc ~/.submit50/submit50/src/build.x.c -o ~/.submit50/buildx
+~/.submit50/buildx

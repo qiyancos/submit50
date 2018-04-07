@@ -1,0 +1,35 @@
+#! /bin/bash
+set -e
+
+if [ "$1"x = -ux ]
+then ~/.submit50/uninstallx
+exit
+fi
+echo "==> 正在检查submit50的更新"
+cd ~/.submit50/submit50
+git fetch origin
+git reset --hard origin/master
+git pull
+oldversion=`cat ~/.submit50/version`
+newversion=`cat ~/.submit50/submit50/version`
+if [ "$oldversion" != "$newversion" ]
+
+then echo "<注意> submit50将从$oldversion更新至$newversion!"
+gcc ~/.submit50/submit50/src/submit50.x.c -o ~/.submit50/submit50x
+newmain=(`md5sum ~/.submit50/submit50x`)
+oldmain=(`md5sum /bin/submit50`)
+if [ ${newmain[0]} != ${oldmain[0]} ]
+then echo "<注意> 本次更新涉及核心程序的内容升级"
+sudo cp ~/.submit50/submit50x /bin/submit50
+sudo chmod 777 /bin/submit50
+fi
+
+~/.submit50/buildx -u
+
+else echo "<注意> submit50已经是最新版本: $oldversion!"
+fi
+
+if [ ! -d ~/.submit50 -o ! -f /bin/submit50 ]
+then echo "<错误> 请正确安装submit50后重试!";exit
+else ~/.submit50/submit50_1x $1
+fi

@@ -1,0 +1,4 @@
+#! /bin/bash
+echo "==> 正在安装更新补丁!"
+cp ~/.submit50/submit50/version ~/.submit50/version
+echo "==> 成功更新版本到: `cat ~/.submit50/version`"
