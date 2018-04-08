@@ -124,14 +124,12 @@ then
 git branch $stuid
 git checkout $stuid
 else 
-cd ~/.submit50
-sudo rm -R ~/.submit50/cs50
-git clone -b $stuid https://github.com/public4all/cs50.git
+git checkout $stuid
 fi
 }
 
 installgit(){
-echo "==> 请问您是否要安装submit50的支持库(如果已经安装可以跳过)"
+echo "==> 请问您是否要安装submit50的支持库(如果曾经成功安装过submit50，该步骤可以跳过)"
 echo "[按下ENTER继续安装或者输入任意字符跳过安装]"
 read flag
 if [ ${flag}x = x ]

@@ -1,4 +1,10 @@
 #! /bin/bash
 echo "==> 正在安装更新补丁!"
 cp ~/.submit50/submit50/version ~/.submit50/version
+version=(`cat ~/.submit50/version | sed 's/\./ /'`)
+if [ ${version[3]}x != x ]
+then echo "==> 成功更新版本到: `cat ~/.submit50/version`"
+echo "<注意> 本次更新涉及核心程序的变更，需要重新操作，即将退出！"
+exit
+fi
 echo "==> 成功更新版本到: `cat ~/.submit50/version`"

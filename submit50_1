@@ -8,6 +8,7 @@ echo "==> 开始上传sb2文件到远程库"
 if [ `find -name "*.sb2"`x != x ]
 then sudo rm ~/.submit50/gitdir/*.sb2
 fi
+sudo chmod 777 "$*"
 sudo cp "$*" ~/.submit50/gitdir/`echo $stuid | base64 -i`.sb2
 git add --all
 git commit -m $stuid
