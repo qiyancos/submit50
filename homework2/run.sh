@@ -32,8 +32,8 @@ fi
 for file in $filelist
 do
 	echo "==> 测试文件：$file"
-	(time cat ./dictionary.txt ./texts/$file | ./test 1> ./out/$file) >& ./time1.tmp
-	(time cat ./dictionary.txt ./texts/$file | ./$1 1> ./keys/$file) >& ./time2.tmp
+	(time cat ./dictionary.txt ./texts/$file | ./test 1> ./keys/$file) >& ./time1.tmp
+	(time cat ./dictionary.txt ./texts/$file | ./$1 1> ./out/$file) >& ./time2.tmp
 	diff ./out/$file ./keys/$file
 	temp1=(`md5sum ./out/$file`)
 	temp2=(`md5sum ./keys/$file`)
