@@ -28,7 +28,7 @@ if [ $? != 0 ]
 then echo "<错误> 编译错误"
 exit
 fi
-
+chmod +x ./test
 for file in $filelist
 do
 	echo "==> 测试文件：$file"
