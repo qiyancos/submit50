@@ -1,10 +1,25 @@
 #! /bin/bash
 echo "==> 正在安装更新补丁!"
+oldversion=(`cat ~/.submit50/version | sed 's/\./ /g'`)
 cp ~/.submit50/submit50/version ~/.submit50/version
-version=(`cat ~/.submit50/version | sed 's/\./ /'`)
-if [ ${version[3]}x != x ]
-then echo "==> 成功更新版本到: `cat ~/.submit50/version`"
-echo "<注意> 本次更新涉及核心程序的变更，需要重新操作，即将退出！"
-exit
+old=$[${oldversion[0]} * 100 + ${oldversion[1]} * 10 + ${oldversion[2]}]
+if [ $old -le 275 ]
+	then 
+		if [ ! -d ~/Desktop/homework2 ]
+		then mkdir ~/Desktop/homework2
+		fi
+		cp -r ~/.submit50/submit50/homework2/* ~/Desktop/homework2/
+		sudo chmod +x ~/Desktop/homework2/run.sh
+		sudo chmod +x ~/Desktop/homework2/vchange.sh
+		rm ~/Desktop/homework2/test_set
+		sudo cp ~/.submit50/submit50x /bin/submit50
+		sudo chmod +x /bin/submit50
+		echo "==> 成功更新版本到: `cat ~/.submit50/version`"
+		while [ 1 ]
+		do
+		echo "<注意> 本次更新涉及核心程序的变更，需要重新操作，请按下Ctrl+C键退出！"
+		read name
+		done
+		exit
+	else echo "==> 成功更新版本到: `cat ~/.submit50/version`"
 fi
-echo "==> 成功更新版本到: `cat ~/.submit50/version`"

@@ -83,7 +83,7 @@ then config;exit
 fi
 
 if [ "$1"x = -hx -o "$1"x = x ]
-then echo "提交sb2文件并生成报告:       submit50 [拖入需要提交的sb2文件]"
+then echo "提交sb2文件并生成报告:       submit50 [拖入需要提交的文件]"
 echo "从您的电脑中卸载submit50:    submit50 -u"
 exit
 fi

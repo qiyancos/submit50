@@ -1,0 +1,70 @@
+#! /bin/bash
+
+testit(){
+echo "==> 开始对代码进行检测"
+cd ~/.submit50/submit50/homework2
+g++ "$*" -o ~/.submit50/submit50/homework2/mytest
+chmod +x ./test
+(time cat ./dictionary.txt ./test_set | ./mytest 1> ./test_out) >& ./time1.tmp
+(time cat ./dictionary.txt ./test_set | ./test 1> ./test_keys) >& ./time2.tmp
+diff ./test_keys ./test_out
+temp1=(`md5sum ./test_keys`)
+temp2=(`md5sum ./test_out`)
+if [ ${temp1[0]} != ${temp2[0]} ]
+	then 
+		echo "<错误> 结果不匹配"
+		exit
+	else 
+		echo "    <注意> 结果匹配"
+		time1=(`cat ./time1.tmp`)
+		time2=(`cat ./time2.tmp`)
+		echo "    例程运行时间 ${time1[3]}"
+		echo "    你的运行时间 ${time2[3]}"
+	echo
+fi
+rm ./time1.tmp ./time2.tmp ./test_keys ./test_out ./mytest
+}
+
+packup(){
+echo "==> 请问您是否要将本次的结果打包提交? "
+echo -n "[按下ENTER键继续或者输入任意字符退出]"
+name=`sed -n 1p ~/.submit50/config`
+stuid=`sed -n 2p ~/.submit50/config`
+read flag
+if [ ${flag}x = x ]
+then
+	if [ -f ~/.submit50/cs50/${stuid}_2.zip ]
+	then echo "<警告> 发现以前的打包文件, 下面的操作将会覆盖该文件"
+	fi
+	cd ~/.submit50/
+	echo "==> 正在为您打包本次作业: "
+	mkdir ~/.submit50/${stuid}_2
+	date=`date`
+	echo $name, $stuid, ${time1[3]}, ${time2[3]}, $date | base64 -i > ~/.submit50/${stuid}_2/report.bin
+	sudo cp "$*" ~/.submit50/${stuid}_2/"`basename "$*"`"
+	zippwd=`echo $stuid | base64 -i`
+	cd ~/.submit50
+	sudo zip -rP "$zippwd" ~/.submit50/cs50/${stuid}_2.zip ./${stuid}_2/*
+	sudo rm -R ~/.submit50/${stuid}_2
+	echo "==> 已成功为您打包，正在进行提交:"
+	cd ~/.submit50/cs50
+	git add --all
+	git commit -m $stuid
+	echo "<注意> 下面的提示中请输入公共github帐号的用户名和密码!"
+	git push -u -f origin $stuid:$stuid
+	if [ $? != 0 ]
+		then 
+		echo "<错误> 提交失败!"
+		exit
+		else echo "==> 提交成功!"
+	fi
+else exit
+fi
+}
+ 
+if [ ! -f "$*" ]
+then echo "<错误> 无法找到这个文件或目录!"
+else 
+testit $*
+packup $*
+fi

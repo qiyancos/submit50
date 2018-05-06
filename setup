@@ -101,6 +101,10 @@ getid
 echo "==> 正在配置环境"
 mkdir ~/.submit50/gitdir
 echo -e "$name\n$stuid" > ~/.submit50/config
+cp -r ~/.submit50/submit50/homework2 ~/Desktop/
+rm ~/Desktop/homework2/test_set
+sudo chmod +x ~/Desktop/homework2/run.sh
+sudo chmod +x ~/Desktop/homework2/vchange.sh
 cp ~/.submit50/submit50/check.pyc ~/.submit50/check.pyc
 cp ~/.submit50/submit50/version ~/.submit50/version
 sudo cp ~/.submit50/submit50x /bin/submit50
@@ -141,10 +145,6 @@ sudo apt-get remove libdpkg-perl
 sudo apt-get install libdpkg-perl
 sudo apt-get install dpkg-dev
 
-sudo apt-get install expect
-sudo apt-get install tcl
-sudo apt-get install tcl-dev
-
 sudo apt-get install python
 sudo apt-get install python-selenium
 
@@ -162,9 +162,9 @@ sudo chmod 777 /usr/local/share/chromedriver
 sudo chmod 777 /usr/local/bin/chromedriver
 sudo chmod 777 /usr/bin/chromedriver
 
-unsupported="systemd-services libcgmanager0 libjasper1 libnss3-nssdb"
+unsupported="libcgmanager0 libjasper1 libnss3-nssdb systemd-services udev"
 
-sudo apt-get install apt apt-utils ca-certificates dbus fontconfig fontconfig-config gnupg gpgv isc-dhcp-common libapparmor1 libasn1-8-heimdal libcups2 libdb5.3 libdrm2 libexpat1 libffi6 libfontconfig1 libfreetype6 libgd3 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgraphite2-3 libgssapi3-heimdal libgudev-1.0-0 libharfbuzz0b libhcrypto4-heimdal libheimbase1-heimdal libhx509-5-heimdal libidn11 libkrb5-26-heimdal libldap-2.4.2 libnspr4 libnss3 libpam-systemd libssl1.0.0  libtiff5 libudev1 libwind0-heimdal libxcursor1 libxml2 libxpm4 multiarch-support openssl python3.4 python3.4-minimal sensible-utils tzdata udev $unsupported
+sudo apt-get install apt apt-utils ca-certificates dbus fontconfig fontconfig-config gnupg gpgv isc-dhcp-common libapparmor1 libasn1-8-heimdal libcups2 libdb5.3 libdrm2 libexpat1 libffi6 libfontconfig1 libfreetype6 libgd3 libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgraphite2-3 libgssapi3-heimdal libgudev-1.0-0 libharfbuzz0b libhcrypto4-heimdal libheimbase1-heimdal libhx509-5-heimdal libidn11 libkrb5-26-heimdal libldap-2.4.2 libnspr4 libnss3 libpam-systemd libssl1.0.0  libtiff5 libudev1 libwind0-heimdal libxcursor1 libxml2 libxpm4 multiarch-support openssl python3.4 python3.4-minimal sensible-utils tzdata $unsupported
 
 sudo apt-get -f install
 sudo dpkg -i ~/.submit50/submit50/google-chrome*
